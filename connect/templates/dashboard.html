@@ -1,0 +1,77 @@
+{% extends 'base_dashboard.html' %}
+
+{% block content %}
+
+<header>
+    <h1>Comrade Connect</h1>
+    <nav>
+        <a href="{% url 'login' %}" class="logout-button">Logout</a>
+    </nav>
+</header>
+<main>
+    <div class="container">
+        <!-- Statistics Section -->
+        <section class="statistics">
+            <h2>Statistics</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <p>Total Slots: {{ total_slots }}</p>
+                </div>
+                <div class="stat-card">
+                    <p>Total Companies: {{ total_companies }}</p>
+                </div>
+                <!-- Add more statistics cards here -->
+            </div>
+        </section>
+        <!-- Slots Section -->
+        <section class="slots">
+            {% if specialization_slots %}
+                {% for specialization, slots in specialization_slots.items %}
+                    <div class="specialization-section">
+                        <h2>{{ specialization }}</h2>
+                        <div class="slots-container">
+                            {% for slot in slots %}
+                                <div class="slot-card">
+                                    <div class="slot-header">
+                                        <h3>{{ slot.tech_company_id.tech_company_name }}</h3>
+                                        <p class="location">Location: {{ slot.ward_id.constituency_id.constituency_name }}, {{ slot.ward_id.ward_name }}</p>
+                                    </div>
+                                    <div class="slot-details">
+                                        <p class="slots-available">Slots Available: {{ slot.slot_count }}</p>
+                                        <p class="apply-by">Apply by: {{ slot.application_deadline }}</p>
+                                        <button class="apply-button" data-company="{{ slot.tech_company_id.tech_company_name }}">Apply</button>
+                                        <div class="apply-info">
+                                            <p>{{ slot.application_instructions }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No slots available.</p>
+            {% endif %}
+        </section>
+    </div>
+</main>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event delegation for apply button clicks
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('apply-button')) {
+                // Get the company name
+                const companyName = event.target.dataset.company;
+                // Hide all other apply-info elements
+                const applyInfos = document.querySelectorAll('.apply-info');
+                applyInfos.forEach(function(info) {
+                    info.style.display = 'none';
+                });
+                // Display the apply-info for the clicked company
+                const applyInfo = event.target.nextElementSibling;
+                applyInfo.style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}
